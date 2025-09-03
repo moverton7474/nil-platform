@@ -1,0 +1,18 @@
+# root
+node_modules/
+dist/
+.build/
+.cache/
+.env
+.env.*
+*.log
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.poetry/
+.idea/
+.vscode/
+.DS_Store

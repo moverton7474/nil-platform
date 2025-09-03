@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: nil
+      POSTGRES_PASSWORD: nilpass
+      POSTGRES_DB: nil
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  backend:
+    build:
+      context: ./nil-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://nil:nilpass@postgres:5432/nil
+      REDIS_URL: redis://redis:6379/0
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8080"
+  frontend:
+    build:
+      context: ./nil-frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+volumes:
+  pgdata:

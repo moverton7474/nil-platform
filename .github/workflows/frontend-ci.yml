@@ -1,0 +1,29 @@
+name: frontend-ci
+on:
+  push:
+    paths:
+      - "nil-frontend/**"
+  pull_request:
+    paths:
+      - "nil-frontend/**"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: nil-frontend/package-lock.json
+      - name: Install
+        working-directory: nil-frontend
+        run: npm ci
+      - name: Typecheck
+        working-directory: nil-frontend
+        run: npm run -s tsc
+      - name: Build
+        working-directory: nil-frontend
+        env:
+          VITE_API_BASE_URL: https://app-tezykswk.fly.dev
+        run: npm run -s build

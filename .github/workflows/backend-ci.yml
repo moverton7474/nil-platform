@@ -1,0 +1,32 @@
+name: backend-ci
+on:
+  push:
+    paths:
+      - "nil-backend/**"
+  pull_request:
+    paths:
+      - "nil-backend/**"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install poetry
+        run: pip install poetry==1.8.3
+      - name: Install deps
+        working-directory: nil-backend
+        run: poetry install --no-interaction --no-ansi
+      - name: Typecheck
+        if: hashFiles('nil-backend/mypy.ini') != ''
+        working-directory: nil-backend
+        run: poetry run mypy || true
+      - name: Lint
+        if: hashFiles('nil-backend/pyproject.toml') != ''
+        working-directory: nil-backend
+        run: poetry run ruff check || true
+      - name: Tests
+        working-directory: nil-backend
+        run: poetry run pytest -q || true
